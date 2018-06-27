@@ -36,7 +36,7 @@ function appReducer(state = initialState, action) {
         .setIn(['data', 'recipes'], false);
     case LOAD_RECIPES_SUCCESS:
       return state
-        .setIn(['data', 'recipes'], action.recipes.slice(0, 20))
+        .setIn(['data', 'recipes'], action.recipes)
         .set('loading', false);
     case LOAD_RECIPES_ERROR:
       return state

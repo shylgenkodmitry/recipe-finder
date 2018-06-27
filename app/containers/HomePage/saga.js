@@ -16,10 +16,18 @@ export function* getRecipes() {
   const query = yield select(makeSelectQuery());
   const encodedQuery = encodeURIComponent(query);
   const requestURL = `${API_ROOT}q=${encodedQuery}`;
+  let pageIndex = 1;
+  let recipesResult = [];
+  let iteratorResult = null;
 
   try {
-    const recipes = yield call(request, requestURL);
-    yield put(recipesLoaded(recipes.results));
+    while (!iteratorResult || (recipesResult.length < 20 && iteratorResult.results.length > 0)) {
+      iteratorResult = yield call(request, `${requestURL}&p=${pageIndex}`);
+      recipesResult = recipesResult.concat(iteratorResult.results);
+      pageIndex += 1;
+    }
+    recipesResult = recipesResult.slice(0, 20);
+    yield put(recipesLoaded(recipesResult));
   } catch (err) {
     yield put(recipesLoadingError(err));
   }
